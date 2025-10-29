@@ -22,19 +22,21 @@ const TaskList: React.FC<TaskListProps> = ({
         <div
           ref={provided.innerRef}
           {...provided.droppableProps}
-          className="space-y-2"
+          className="w-full min-h-[200px]"
         >
-          {tasks.map((task, index) => (
-            <TaskItem
-              key={task.id}
-              task={task}
-              index={index}
-              onToggleComplete={onToggleComplete}
-              onDelete={onDelete}
-              onUpdateText={onUpdateText}
-            />
-          ))}
-          {provided.placeholder}
+          <div className="space-y-2">
+            {tasks.map((task, index) => (
+              <TaskItem
+                key={task.id}
+                task={task}
+                index={index}
+                onToggleComplete={onToggleComplete}
+                onDelete={onDelete}
+                onUpdateText={onUpdateText}
+              />
+            ))}
+            {provided.placeholder}
+          </div>
         </div>
       )}
     </Droppable>

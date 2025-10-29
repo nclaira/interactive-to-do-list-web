@@ -51,12 +51,31 @@ const TaskItem: React.FC<TaskItemProps> = ({
         <div
           ref={provided.innerRef}
           {...provided.draggableProps}
-          {...provided.dragHandleProps}
-          className={`flex justify-between items-center p-3 my-2 rounded-xl shadow transition-colors ${
-            snapshot.isDragging ? 'bg-gray-200 dark:bg-gray-700' : 'bg-white dark:bg-gray-700'
+          className={`flex justify-between items-center p-3 my-2 rounded-xl shadow transition-all ${
+            snapshot.isDragging 
+              ? 'bg-gray-200 dark:bg-gray-700 transform scale-105 shadow-lg' 
+              : 'bg-white dark:bg-gray-700 hover:shadow-md'
           }`}
+          style={{
+            ...provided.draggableProps.style,
+            // Add a slight tilt when dragging for better visual feedback
+            transform: snapshot.isDragging 
+              ? `${provided.draggableProps.style?.transform} rotate(1deg)`
+              : provided.draggableProps.style?.transform,
+          }}
         >
-          <div className="flex items-center space-x-3 flex-1">
+          <div className="flex items-center space-x-3 flex-1" {...provided.dragHandleProps}>
+            {/* Drag handle icon */}
+            <div className="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 cursor-grab active:cursor-grabbing">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="9" cy="12" r="1"></circle>
+                <circle cx="9" cy="5" r="1"></circle>
+                <circle cx="9" cy="19" r="1"></circle>
+                <circle cx="15" cy="12" r="1"></circle>
+                <circle cx="15" cy="5" r="1"></circle>
+                <circle cx="15" cy="19" r="1"></circle>
+              </svg>
+            </div>
             <input
               type="checkbox"
               checked={task.completed}

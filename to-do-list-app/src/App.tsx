@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { DropResult } from '@hello-pangea/dnd';
+import { DragDropContext, DropResult } from '@hello-pangea/dnd';
 import { Task, TaskFilters } from './types';
 import Home from './components/Home';
 
@@ -90,37 +90,58 @@ const App: React.FC = () => {
   };
 
   const onDragEnd = (result: DropResult) => {
-    if (!result.destination) return;
+    // If dropped outside a valid drop target
+    if (!result.destination) {
+      return;
+    }
 
-    const items = Array.from(tasks);
-    const [reorderedItem] = items.splice(result.source.index, 1);
-    items.splice(result.destination.index, 0, reorderedItem);
+    // If the item was dropped in the same position
+    if (
+      result.destination.droppableId === result.source.droppableId &&
+      result.destination.index === result.source.index
+    ) {
+      return;
+    }
 
-    setTasks(items);
+    // Create a new array from the current tasks
+    const newTasks = Array.from(tasks);
+    
+    // Remove the dragged task from its original position
+    const [movedTask] = newTasks.splice(result.source.index, 1);
+    
+    // Insert it at the new position
+    newTasks.splice(result.destination.index, 0, movedTask);
+
+    // Update the state with the new task order
+    setTasks(newTasks);
+    
+    // Also update localStorage to persist the new order
+    localStorage.setItem('tasks', JSON.stringify(newTasks));
   };
 
   return (
-    <div className={`${darkMode ? 'dark bg-gray-900' : 'bg-sky-200'}`}>
-      <Home
-        darkMode={darkMode}
-        toggleDarkMode={() => setDarkMode(!darkMode)}
-        tasks={tasks}
-        newTask={newTask}
-        setNewTask={setNewTask}
-        addTask={addTask}
-        category={category}
-        setCategory={setCategory}
-        priority={priority}
-        setPriority={setPriority}
-        toggleComplete={toggleComplete}
-        deleteTask={deleteTask}
-        updateTaskText={updateTaskText}
-        onDragEnd={onDragEnd}
-        filters={filters}
-        setFilters={setFilters}
-        filteredTasks={filteredTasks}
-      />
-    </div>
+    <DragDropContext onDragEnd={onDragEnd}>
+      <div className={`min-h-screen ${darkMode ? 'dark bg-gray-900' : 'bg-sky-200'}`}>
+        <Home
+          darkMode={darkMode}
+          toggleDarkMode={() => setDarkMode(!darkMode)}
+          tasks={tasks}
+          newTask={newTask}
+          setNewTask={setNewTask}
+          addTask={addTask}
+          category={category}
+          setCategory={setCategory}
+          priority={priority}
+          setPriority={setPriority}
+          toggleComplete={toggleComplete}
+          deleteTask={deleteTask}
+          updateTaskText={updateTaskText}
+          filters={filters}
+          setFilters={setFilters}
+          filteredTasks={filteredTasks}
+        />
+      </div>
+    </DragDropContext>
   );
 };
 
